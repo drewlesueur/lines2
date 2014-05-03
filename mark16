@@ -7,7 +7,8 @@ _ = require("underscore")
 var fs = require("fs")
 
 var g = {
-  __mode: "single"
+  __mode: "single",
+  nestCount: 0
 }
 
 var builtin = {
@@ -60,11 +61,13 @@ var builtin = {
     var rest = args.slice(2).join(" ") // maybe pass in the original line here (or line could be on g)
     var code = g[args[1]]
     var lines = code.split("\n")
+    //for (var i = 0; i < lines.length - 0; i++) {
     for (var i = 0; i < lines.length - 1; i++) {
       var line = lines[i] 
       mark16EvalLine(line, g, builtin)
     } 
     var lastLine = lines[lines.length - 1]
+    //return lastLine
     return lastLine
   },
   eq: function (args, g, builtin) {
@@ -93,7 +96,10 @@ var mark16EvalLines = function(code, g, builtin) {
 }
 
 var mark16EvalLine = function (line, g, builtin) {
+  g.nestCount += 1
+  //console.log("nestCount:" + g.nestCount)
   var words = line.split(" ") 
+  var lastLine = null
   if (g.__mode == "multi") {
     if (words[0] == g.__end_str) {
       g[g.__key] = g.__text.join("\n")
@@ -103,19 +109,20 @@ var mark16EvalLine = function (line, g, builtin) {
     }
   } else {
     if (line == "" || line.substr(0, 1) == "#") {
-      return;   
+    } else {
+      var funcName = words[0]
+      //var rest = words.slice(1).join(" ")
+      var builtinFunc = builtin[funcName]
+      if (builtinFunc) {
+        var lastLine = builtinFunc(words, g, builtin) 
+      } else if (userFunc = g[funcName]) {
+        words.unshift("call")
+        var lastLine = builtin.call(words, g, builtin)
+      }
     }
-    var funcName = words[0]
-    //var rest = words.slice(1).join(" ")
-    var builtinFunc = builtin[funcName]
-    if (builtinFunc) {
-      var lastLine = builtinFunc(words, g, builtin) 
-    } else if (userFunc = g[funcName]) {
-      words.unshift("call")
-      var lastLine = builtin.call(words, g, builtin)
-    }
-    return lastLine
   }
+  g.nestCount -= 1
+  return lastLine
 }
 
 var code = fs.readFileSync(process.argv[2]).toString()

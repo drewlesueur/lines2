@@ -3,7 +3,6 @@
 //dice
 // high low
 
-_ = require("underscore")
 var fs = require("fs")
 
 var g = {

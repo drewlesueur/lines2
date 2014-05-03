@@ -4,12 +4,15 @@ _ = require("underscore")
 var fs = require("fs")
 
 var g = {
-  
+  __mode: "single"
 }
 
 var builtin = {
   set: function (args, g, builtin) {
     g[args[1]] = args[2] 
+  },
+  seti: function (args, g, builtin) {
+    g[g[args[1]]] = g[args[2]]
   },
   assert: function (args, g, builtin) {
     var val1 = g[args[1]]
@@ -17,25 +20,65 @@ var builtin = {
     if (val1 != val2) {
       console.log("Error: " + val1 + " does not equal " + val2)  
     }
-  }
+  },
+  lines: function (args, g, builtin) {
+    g.__key = args[1] 
+    g.__text = []
+    g.__mode = "multi" // multiline mode
+    g.__end_str = args[2] || "end"
+  },
 
+  printi: function (args, g, builtin) {
+    console.log(g[args[1]]) 
+  },
+  print: function (args, g, builtin) {
+    console.log(args.slice(1).join(" ")) 
+  },
+  call: function (args, g, builtin) {
+    console.log("got here!!!")
+    var funcName = args[1] 
+    var rest = args.slice(2).join(" ") // maybe pass in the original line here (or line could be on g)
+    var code = g[args[1]]
+    var lines = code.split("\n")
+    for (var i = 0; i < lines.length - 1; i++) {
+      var line = lines[i] 
+      mark16EvalLine(line, g, builtin)
+    } 
+    var lastLine = lines[lines.length - 1]
+    return lastLine
+  }
 }
 
 var mark16EvalLines = function(code, g, builtin) {
   code = code.split("\n") 
   for (var i=0; i<code.length; i++) {
     var line = code[i]    
-    mark16EvalLine(line, g, builtin)
+    while (line) {
+      line = mark16EvalLine(line, g, builtin)
+    }
   }
 }
 
 var mark16EvalLine = function (line, g, builtin) {
-  words = line.split(" ") 
-  var funcName = words[0]
-  //var rest = words.slice(1).join(" ")
-  var builtinFunc = builtin[funcName]
-  if (builtinFunc) {
-    builtinFunc(words, g, builtin) 
+  var words = line.split(" ") 
+  if (g.__mode == "multi") {
+    if (words[0] == g.__end_str) {
+      g[g.__key] = g.__text.join("\n")
+      g.__mode = "single"  
+    } else {
+      g.__text.push(line.substr(2)) 
+    }
+  } else {
+    var funcName = words[0]
+    //var rest = words.slice(1).join(" ")
+    var builtinFunc = builtin[funcName]
+    if (builtinFunc) {
+      builtinFunc(words, g, builtin) 
+    } else if (userFunc = g[funcName]) {
+      words.unshift("call")
+      var lastLine = builtin.call(words, g, builtin)
+      return lastLine
+    }
   }
 }
 

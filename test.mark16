@@ -1,3 +1,26 @@
 set name Drew
 assert name Drew
 
+lines info
+  I like playing volleyball
+  Aimee is by wife.
+  Jewel and Grace
+end
+printi info
+
+print Yo world
+
+lines greet
+  print 1
+  print 2
+  print 3
+end
+
+
+greet
+
+print what?!
+
+
+
+

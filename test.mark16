@@ -3,9 +3,9 @@ assert name Drew
 
 lines info
   I like playing volleyball
-  Aimee is by wife.
-  Jewel and Grace
+  family
 end
+
 printi info
 
 print Yo world
@@ -16,11 +16,54 @@ lines greet
   print 3
 end
 
+print previous
+lines set_a_1
+  print Got here
+  set a 1
+end
+print next
 
-greet
+set b 10
+set b2 10
+
+eq b_is_b2 b b2
+print B is b2??
+printi b_is_b2
+
+if b_is_b2 set_a_1
+assert a 1
+
+set should_i_stay 1
+not should_i_go should_i_stay
+
+print should I go is
+printi should_i_go
+
+
+
+add1 my_count
+add1 my_count
+add1 my_count
+add1 my_count
+add1 my_count
+printi my_count
+
+
+set stop_loopy 10
+
+lines loopy
+  add1 some_loop_var
+  print loop $some_loop_var
+  eq should_i_stop some_loop_var stop_loopy
+  not should_i_continue should_i_stop
+  if should_i_continue loopy
+end
+
+loopy
+
+
+#greet
 
 print what?!
 
-
-
-
+#print_scope

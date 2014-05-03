@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+//dice
+// high low
+
 _ = require("underscore")
 var fs = require("fs")
 
@@ -32,10 +35,27 @@ var builtin = {
     console.log(g[args[1]]) 
   },
   print: function (args, g, builtin) {
-    console.log(args.slice(1).join(" ")) 
+    var line = args.slice(1).join(" ")
+    var interpolated = line.replace(/\$(\w+)/g, function (whole, part) {
+      return g[part] || ""
+    })
+    console.log(interpolated)
+  },
+  if: function (args, g, builtin) {
+    var cond = g[args[1]]
+    if (cond === "1") {
+      args.splice(1, 1)
+      var ret =  builtin.call(args, g, builtin)   
+      return ret;
+    } else {
+    }
+  },
+  not: function (args, g, builtin) {
+    var val = g[args[2]] 
+    var notVal = val === "1" ? "0" : "1"
+    g[args[1]] = notVal
   },
   call: function (args, g, builtin) {
-    console.log("got here!!!")
     var funcName = args[1] 
     var rest = args.slice(2).join(" ") // maybe pass in the original line here (or line could be on g)
     var code = g[args[1]]
@@ -46,13 +66,26 @@ var builtin = {
     } 
     var lastLine = lines[lines.length - 1]
     return lastLine
-  }
+  },
+  eq: function (args, g, builtin) {
+    g[args[1]] = (g[args[2]] == g[args[3]]) ? "1" : "0"
+  },
+  print_scope: function (args, g, builtin){
+    console.log(g) 
+  },
+  add1: function (args, g, builtin) {
+    g[args[1]] = g[args[1]] || "0"
+    g[args[1]] = (g[args[1]] - 0 + 1).toString()  
+  },
 }
+
 
 var mark16EvalLines = function(code, g, builtin) {
   code = code.split("\n") 
   for (var i=0; i<code.length; i++) {
     var line = code[i]    
+    
+    line = mark16EvalLine(line, g, builtin)
     while (line) {
       line = mark16EvalLine(line, g, builtin)
     }
@@ -69,16 +102,19 @@ var mark16EvalLine = function (line, g, builtin) {
       g.__text.push(line.substr(2)) 
     }
   } else {
+    if (line == "" || line.substr(0, 1) == "#") {
+      return;   
+    }
     var funcName = words[0]
     //var rest = words.slice(1).join(" ")
     var builtinFunc = builtin[funcName]
     if (builtinFunc) {
-      builtinFunc(words, g, builtin) 
+      var lastLine = builtinFunc(words, g, builtin) 
     } else if (userFunc = g[funcName]) {
       words.unshift("call")
       var lastLine = builtin.call(words, g, builtin)
-      return lastLine
     }
+    return lastLine
   }
 }
 

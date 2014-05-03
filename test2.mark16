@@ -1,0 +1,11 @@
+set stop_loopy 10
+
+lines loopy
+  add1 some_loop_var
+  print loop $some_loop_var
+  eq should_i_stop some_loop_var stop_loopy
+  not should_i_continue should_i_stop
+  if should_i_continue loopy
+end
+
+loopy

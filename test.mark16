@@ -66,4 +66,27 @@ loopy
 
 print what?!
 
+set msg 123456789abcdef
+#substr t1 msg 1 1
+#printi t1
+#assert t1 1
+#
+#substr t2 msg 2 3
+#assert t2 234
+
+substr t3 msg -3 2
+assert t3 de
+
+substr t3 msg -3 -1
+assert t3 def
+
+substr t3 msg -4 -3
+assert t3 cd
+
+substr t3 msg 5 -2
+assert t3 56789abcde
+
+substr t3 msg 5
+assert t3 56789abcdef
+
 #print_scope

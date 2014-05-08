@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+</head>
+<meta name = "viewport" content = "width = 320,
+       initial-scale=1, user-scalable=yes">
+
+<style>
+  * { margin:0; padding:0;}
+</style>
+</head>
+<body>
+<script>
+
+  function getRandomInt (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  var isChrome = (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
+
+  var usingCanvas = isChrome ? false : true
+
+  var pixelsx = 64
+  var pixelsy = 64
+  var totalw = 320
+  var totalh = 320
+  var pixelsw = totalw / pixelsx
+  var pixelsh = totalh / pixelsy
+
+  if (usingCanvas) {
+    var setPixel = function (x, y, color) {
+      d.fillStyle = color
+      d.fillRect(x, y, 1, 1) 
+    }  
+
+    //var c = document.getElementById("c")
+    var c = document.createElement("canvas")
+    c.width = pixelsx
+    c.height = pixelsy
+    c.style.width = totalw + "px"
+    c.style.height = totalh + "px"
+    c.style.imageRendering = "-webkit-optimize-contrast";
+    document.body.appendChild(c)
+
+    var d = c.getContext("2d")
+    d.imageSmoothingEnabled = false;
+    d.webkitImageSmoothingEnabled = false;
+    d.mozImageSmoothingEnabled = false;
+
+    d.fillStyle = "blue"
+    //d.fillRect(0,0,256,256)
+    
+    for (var y = 0; y < 64; y++) {
+      for (var x = 0; x < 64; x++) {
+        alternateColor()
+        d.fillStyle = color
+        //d.fillRect(x,y,1,1) 
+      }
+    }
+  } else {
+    setPixel = function (x, y, color) {
+      var p = document.getElementById(x + "_" + y)
+      if (p) {
+        p.style.backgroundColor = color
+      } else {
+        debugger
+        console.log("no", x, y)
+      }
+    }
+
+    for (var y = 0; y < pixelsx; y++) {
+      for (var x = 0; x < pixelsy; x++) {
+        var pixel = document.createElement("div")
+        pixel.style.position = "absolute"
+        pixel.style.top = (y * pixelsw)  + "px"
+        pixel.style.left = (x * pixelsh)  + "px"
+        pixel.style.width = pixelsw + "px"
+        pixel.style.height = pixelsh + "px"
+        pixel.id = x + "_" + y
+        document.body.appendChild(pixel)
+      }
+    }
+    
+  }
+
+  var letterImgsList = [
+    "..x.." +
+    ".x.x." +
+    "x...x" +
+    "xxxxx" +
+    "x...x" ,
+
+    "xxxx." +
+    "x...x" +
+    "xxxx." +
+    "x...x" +
+    "xxxx." ,
+  ]
+
+  var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
+
+  var letterImages = {} 
+  for (var i=0; i<letters.length; i++) {
+    var letter = letters[i]
+    letterImages[letter] = letterImgsList[i]
+  }
+ 
+   
+  function drawLetter(letter, lx, ly) {
+    var letterPixels = letterImages[letter]
+    var pixels = letterImages[letter]
+
+    var i = 0;
+    for (var y = ly * 6 + 1; y < (ly * 6 + 6); y++) {
+      for (var x = lx * 6 + 1; x < (lx * 6 + 6); x++){
+        var pixel = pixels.charAt(i);
+        console.log(pixel)
+        if (pixel == "x") {
+          var color = "black";
+        } else {
+          var color = "white";
+        }
+        setPixel(x, y, color)
+        i++
+      }
+    }
+  }
+
+
+
+
+  function alternateColor() {
+    color = color == "white" ? "black" : "white"
+  }
+  var color = "white"
+  var pw = 320 / 64
+  var ph = pw
+
+  drawLetter("A", 0, 0)
+  drawLetter("B", 1, 0)
+  drawLetter("B", 2, 0)
+  drawLetter("B", 3, 0)
+  drawLetter("B", 4, 0)
+  drawLetter("B", 5, 0)
+  drawLetter("B", 6, 0)
+  drawLetter("B", 7, 0)
+  drawLetter("B", 8, 0)
+
+  randomInvader(4, 4);
+
+
+</script>

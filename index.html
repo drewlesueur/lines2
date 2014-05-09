@@ -135,6 +135,30 @@
   var pw = 320 / 64
   var ph = pw
 
+  var randomInvader = function (ix, iy) {
+    var invader = getRandomInt(0, Math.pow(2, 15)).toString(2)
+    var color
+    var x2
+    for (var y = 0; y < 5; y++) {
+      for (var x = 0; x < 3; x++) {
+        var chr = invader.charAt(3 * y + x)
+        console.log("foo")
+        if (chr == "1") {
+          color = "black" 
+        } else {
+          color = "white" 
+        }
+        setPixel(6 * ix + 1 + x, 6 * iy + 1 + y, color)
+        if (x == 0 || x == 1) {
+          x2 = 4 - x
+          setPixel(6 * ix + 1 + x2, 6 * iy + 1 + y, color)
+        }
+      }
+    }
+    
+
+  }
+
   drawLetter("A", 0, 0)
   drawLetter("B", 1, 0)
   drawLetter("B", 2, 0)

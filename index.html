@@ -142,7 +142,6 @@
     for (var y = 0; y < 5; y++) {
       for (var x = 0; x < 3; x++) {
         var chr = invader.charAt(3 * y + x)
-        console.log("foo")
         if (chr == "1") {
           color = "black" 
         } else {
@@ -155,21 +154,71 @@
         }
       }
     }
-    
-
   }
 
-  drawLetter("A", 0, 0)
-  drawLetter("B", 1, 0)
-  drawLetter("B", 2, 0)
-  drawLetter("B", 3, 0)
-  drawLetter("B", 4, 0)
-  drawLetter("B", 5, 0)
-  drawLetter("B", 6, 0)
-  drawLetter("B", 7, 0)
-  drawLetter("B", 8, 0)
+  var randomSwirl = function (ix, iy) {
+    var invader = getRandomInt(0, Math.pow(2, 9)).toString(2)
+    //var invader = "100000000"
+    var color
+    for (var y = 0; y < 3; y++) {
+      for (var x = 0; x < 3; x++) {
+        var chr = invader.charAt(3 * y + x)
+        if (chr == "1") {
+          color = "black" 
+        } else {
+          color = "white" 
+        }
+        setPixel(6 * ix + 1 + x, 6 * iy + 1 + y, color)
 
-  randomInvader(4, 4);
+        var x2 = x
+        var y2 = y
+        var oy2
+        for (var i = 1; i < 4; i++) {
+            oy2 = y2
+            y2 = x2
+            x2 = 4 - oy2
+
+          setPixel(6 * ix + 1 + x2, 6 * iy + 1 + y2, color)
+
+        }
+      }
+    }
+  }
+
+
+  //drawLetter("A", 0, 0)
+  //drawLetter("B", 1, 0)
+  //drawLetter("B", 2, 0)
+  //drawLetter("B", 3, 0)
+  //drawLetter("B", 4, 0)
+  //drawLetter("B", 5, 0)
+  //drawLetter("B", 6, 0)
+  //drawLetter("B", 7, 0)
+  //drawLetter("B", 8, 0)
+
+  var loop2 = function (y1, y2, x1, x2, fn) {
+    for (var y = y1; y < y2; y++) {
+      for (var x = x1; x < x2; x++) {
+        fn(x,y);       
+      } 
+    } 
+  }
+
+    for (var y = 0; y < 10; y+=2) {
+      for (var x = 0; x < 10; x+=2) {
+        randomInvader(x,y);
+        //randomSwirl(x,y);
+      } 
+    } 
+
+  //loop2(0,10,0,10, function (x, y) {
+  //  randomInvader(x,y);
+  //})
+
+  false && loop2(7,10,0,10, function (x, y) {
+    randomSwirl(x,y);
+  })
+
 
 
 </script>

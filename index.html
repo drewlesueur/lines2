@@ -9,6 +9,7 @@
 </style>
 </head>
 <body>
+  <script src="md5.js"></script>
 <script>
 
   function getRandomInt (min, max) {
@@ -137,6 +138,19 @@
 
   var randomInvader = function (ix, iy) {
     var invader = getRandomInt(0, Math.pow(2, 15)).toString(2)
+    drawInvader(invader, ix, iy)
+  }
+
+  var invaderForWord = function (word, ix, iy) {
+    var invader = hash15bit(word)
+    drawInvader(invader, ix, iy)
+  }
+
+  var drawInvader = function (invader, ix, iy) {
+    var offs = 5
+    while (invader.length < 15) {
+      invader = "0" + invader
+    }
     var color
     var x2
     for (var y = 0; y < 5; y++) {
@@ -147,13 +161,22 @@
         } else {
           color = "white" 
         }
-        setPixel(6 * ix + 1 + x, 6 * iy + 1 + y, color)
+        setPixel(6 * ix + offs + x, 6 * iy + offs + y, color)
         if (x == 0 || x == 1) {
           x2 = 4 - x
-          setPixel(6 * ix + 1 + x2, 6 * iy + 1 + y, color)
+          setPixel(6 * ix + offs + x2, 6 * iy + offs + y, color)
         }
       }
     }
+  }
+
+  var hash15bit = function (str) {
+    var bits = parseInt(md5(str).substr(0,4), 16).toString(2)  
+    while (bits.length < 15) {
+      bits = "0" + bits
+    }
+    console.log(bits)
+    return bits
   }
 
   var randomSwirl = function (ix, iy) {
@@ -204,12 +227,16 @@
     } 
   }
 
-    for (var y = 0; y < 10; y+=2) {
-      for (var x = 0; x < 10; x+=2) {
-        randomInvader(x,y);
-        //randomSwirl(x,y);
-      } 
-    } 
+  //setInterval(function () {
+  //  for (var y = 0; y < 10; y+=2) {
+  //    for (var x = 0; x < 10; x+=2) {
+  //      randomInvader(x,y);
+  //      //randomSwirl(x,y);
+  //    } 
+  //  } 
+  //}, 1000)
+
+  invaderForWord("family", 8, 0) 
 
   //loop2(0,10,0,10, function (x, y) {
   //  randomInvader(x,y);

@@ -30,7 +30,7 @@ setInterval(function () {
   _.each(listenersWs, function (ws) {
     ws.send(json)
   })
-}, 500)
+}, 1000)
 
 var allColors = ["red", "green", "blue", "pink", "lime", "cyan", "magenta", "yellow", "orange"]
 //var allColors = ["black", "white"]

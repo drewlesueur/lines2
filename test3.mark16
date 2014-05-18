@@ -1,0 +1,12 @@
+set a yoman
+printi a
+
+set name Drew
+assert name Drew
+
+lines info
+  I like playing volleyball
+  family
+end
+
+printi info

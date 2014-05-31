@@ -3,7 +3,7 @@
 // 64x64 operating system
 //redis based.
 
-var thew = 7
+var thew = 64
 var http = require("http")
 
 var redis = require("redis")

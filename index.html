@@ -112,15 +112,16 @@
     }
 
   var setChar = function (x, y, letter, color) {
+    return;
     if (!letter) {letter = ""}
-    var p = document.getElementById("chr_" + x + "_" + y)
+    //var p = document.getElementById("chr_" + x + "_" + y)
     if (p) {
       if (color - 0 == color) {
         color = presets[color]  
       }
       color = color || "black"
       p.style.color = color
-      p.innerHTML = '<span style="font-family: Courier; width: 100%; text-align: center; bottom: 0; position:absolute; font-size: '+pixelsw+'px;">'+letter+'</span>'
+      //p.innerHTML = '<span style="font-family: Courier; width: 100%; text-align: center; bottom: 0; position:absolute; font-size: '+pixelsw+'px;">'+letter+'</span>'
     } else {
       //console.log("no", x, y)
     }

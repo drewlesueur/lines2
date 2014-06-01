@@ -13,6 +13,11 @@ printi info
 
 lines fooey
   print hi_man
+  print inside_a_function_call
 end
-
 fooey
+
+set msg 123456789abcdef
+substr t3 msg -3 2
+assert t3 de
+

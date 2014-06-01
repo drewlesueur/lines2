@@ -93,7 +93,6 @@ var builtin = {
     console.log(mark16Get(args[1], g)) 
   },
   print: function (args, g, builtin) {
-    console.log("printing!!!")
     var line = args.slice(1).join(" ")
     var interpolated = line.replace(/\$(\w+)/g, function (whole, part) {
       return g[part] || ""
@@ -118,9 +117,8 @@ var builtin = {
     var funcName = args[1] 
     var rest = args.slice(2).join(" ") // maybe pass in the original line here (or line could be on g)
     var code = mark16Get(args[1], g)
-    console.log("I am calling!", args[1])
     console.log(JSON.stringify(code))
-    mark16EvalLines(code, g, builtin, true)
+    mark16EvalLines(code, g, builtin, false)
   },
   eq: function (args, g, builtin) {
     mark16Set(args[1], (mark16Get(args[2], g), mark16Get(args[3], g)) ? "1" : "0", g)
@@ -162,7 +160,6 @@ var chug = function (g) {
     //console.log(len, line)
     delete g["__code:" + len]
     len = len - 1
-
     if (len <= 0) {
       clearInterval(timer);
       // break

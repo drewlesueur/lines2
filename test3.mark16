@@ -10,3 +10,9 @@ lines info
 end
 
 printi info
+
+lines fooey
+  print hi_man
+end
+
+fooey

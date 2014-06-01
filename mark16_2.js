@@ -93,6 +93,7 @@ var builtin = {
     console.log(mark16Get(args[1], g)) 
   },
   print: function (args, g, builtin) {
+    console.log("printing!!!")
     var line = args.slice(1).join(" ")
     var interpolated = line.replace(/\$(\w+)/g, function (whole, part) {
       return g[part] || ""
@@ -117,9 +118,9 @@ var builtin = {
     var funcName = args[1] 
     var rest = args.slice(2).join(" ") // maybe pass in the original line here (or line could be on g)
     var code = mark16Get(args[1], g)
-    //var lines = code.split("\n")
-    //for (var i = 0; i < lines.length - 0; i++) {
-    mark16EvalLines(code, g, builtin)
+    console.log("I am calling!", args[1])
+    console.log(JSON.stringify(code))
+    mark16EvalLines(code, g, builtin, true)
   },
   eq: function (args, g, builtin) {
     mark16Set(args[1], (mark16Get(args[2], g), mark16Get(args[3], g)) ? "1" : "0", g)
@@ -134,7 +135,7 @@ var builtin = {
 }
 
 
-var mark16EvalLines = function(code, g, builtin) {
+var mark16EvalLines = function(code, g, builtin, debug) {
   code = code.split("\n") 
   var  startI = mark16Get("__length", g)
   var count = 0;
@@ -145,6 +146,11 @@ var mark16EvalLines = function(code, g, builtin) {
     mark16Set("__code:" + (codeIndex), line, g)
   }
   mark16Set("__length", (startI + code.length), g)
+  if (debug) {
+    console.log("====debug===")
+    console.log(g)
+    console.log("====end debug===")
+  }
 }
 
 var chug = function (g) {
@@ -154,15 +160,16 @@ var chug = function (g) {
     // 1 based index
     var line = mark16Get("__code:" + len, g) 
     //console.log(len, line)
-    mark16EvalLine(line, g, builtin);
-
+    delete g["__code:" + len]
     len = len - 1
+
     if (len <= 0) {
       clearInterval(timer);
       // break
     } else {
       mark16Set("__length", len, g)
     }
+    mark16EvalLine(line, g, builtin);
     
   }, 0)
   //}

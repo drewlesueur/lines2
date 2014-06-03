@@ -1,0 +1,23 @@
+set husband Drew
+set wife Aimee
+
+print $husband and $wife
+
+set blanket lala
+set sticker gunga
+print $blanket and $sticker
+
+lines say-phrase
+  print J and G say $a for $b
+end
+
+lines gen-phrase
+  str ret J and G say $a for $b
+end
+
+set a lala
+set b blanket
+say-phrase
+
+set words:0:0 blanket
+set words:0:1 lala

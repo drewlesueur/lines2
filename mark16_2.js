@@ -88,9 +88,15 @@ var builtin = {
     g.__mode = "multi" // multiline mode
     g.__end_str = args[2] || "end"
   },
-
   printi: function (args, g, builtin) {
     console.log(mark16Get(args[1], g)) 
+  },
+  str: function (args, g, builtin) {
+    var line = args.slice(1).join(" ")
+    var interpolated = line.replace(/\$(\w+)/g, function (whole, part) {
+      return g[part] || ""
+    })
+    mark16Set(args[1], interpolated, g)
   },
   print: function (args, g, builtin) {
     var line = args.slice(1).join(" ")
@@ -166,6 +172,7 @@ var chug = function () {
       if (len <= 0) {
         // break
         //clearInterval(timer);
+        allDone()
       } else {
         process.nextTick(chug)
       }
@@ -182,6 +189,8 @@ var mark16EvalLine = function (line, g, builtin) {
   g.nestCount += 1
   //console.log("nestCount:" + g.nestCount)
   var words = line.split(" ") 
+  var lastLine = mark16Get("__line", g)
+  mark16Set("__last_line", lastLine, g)
   mark16Set("__line", line, g)
   if (g.__mode == "multi") {
     if (words[0] == g.__end_str) {
@@ -207,9 +216,12 @@ var mark16EvalLine = function (line, g, builtin) {
   g.nestCount -= 1
 }
 
+var allDone = function () {
+  //console.log(g)
+}
+
 var code = fs.readFileSync(process.argv[2]).toString()
 mark16EvalLines(code, g, builtin)
 chug()
 
-console.log(g)
 

@@ -21,3 +21,19 @@ set msg 123456789abcdef
 substr t3 msg -3 2
 assert t3 de
 
+
+lines greet
+  print hello $name!
+end
+
+set name Drew
+greet
+
+
+
+
+
+
+
+
+

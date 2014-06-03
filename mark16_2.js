@@ -151,33 +151,38 @@ var mark16EvalLines = function(code, g, builtin, debug) {
   }
 }
 
-var chug = function (g) {
+var chug = function () {
   //while (true) {
-  var timer = setInterval(function () {
-    var len = mark16Get("__length", g)
-    // 1 based index
-    var line = mark16Get("__code:" + len, g) 
-    //console.log(len, line)
-    delete g["__code:" + len]
-    len = len - 1
-    if (len <= 0) {
-      clearInterval(timer);
-      // break
-    } else {
+  //var timer = setInterval(function () {
+      var len = mark16Get("__length", g)
+      // 1 based index
+      var line = mark16Get("__code:" + len, g) 
+      //console.log(len, line)
+      delete g["__code:" + len]
+      len = len - 1
       mark16Set("__length", len, g)
-    }
-    mark16EvalLine(line, g, builtin);
-    
-  }, 0)
+      mark16EvalLine(line, g, builtin);
+
+      if (len <= 0) {
+        // break
+        //clearInterval(timer);
+      } else {
+        process.nextTick(chug)
+      }
+  //}, 0)
   //}
 }
 
 
+var mark16GetFirstWord = function (line) {
+  
+}
 
 var mark16EvalLine = function (line, g, builtin) {
   g.nestCount += 1
   //console.log("nestCount:" + g.nestCount)
   var words = line.split(" ") 
+  mark16Set("__line", line, g)
   if (g.__mode == "multi") {
     if (words[0] == g.__end_str) {
       g[g.__key] = g.__text.join("\n")
@@ -204,7 +209,7 @@ var mark16EvalLine = function (line, g, builtin) {
 
 var code = fs.readFileSync(process.argv[2]).toString()
 mark16EvalLines(code, g, builtin)
-chug(g)
+chug()
 
 console.log(g)
 

@@ -5,8 +5,8 @@ set name Drew
 assert name Drew
 
 lines info
-  I like playing volleyball
-  family
+I like playing volleyball
+family
 end
 
 printi info
@@ -15,6 +15,7 @@ lines fooey
   print hi_man
   print inside_a_function_call
 end
+
 fooey
 
 set msg 123456789abcdef
@@ -22,11 +23,11 @@ substr t3 msg -3 2
 assert t3 de
 
 lines greet
-  print hello $name!
+print hello $name!
 end
 
 lines test1
-  print $args
+print $args
 end
 
 test1
@@ -38,13 +39,13 @@ set name Drew_LeSueur_yo!
 print what was last
 
 
+
 lines loopey
 end
 
+lines test2
+print this is a test
+end
 
-
-
-
-
-
-
+test2
+print yo 

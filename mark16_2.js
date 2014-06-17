@@ -123,7 +123,10 @@ var builtin = {
     var funcName = args[1] 
     var rest = args.slice(2).join(" ") // maybe pass in the original line here (or line could be on g)
     var code = mark16Get(args[1], g)
-    console.log(JSON.stringify(code))
+		//if (funcName == "test2") {
+		//	console.log("the code here is ")	
+		//	console.log(code)	
+		//}
     mark16EvalLines(code, g, builtin, false)
   },
   eq: function (args, g, builtin) {
@@ -197,7 +200,9 @@ var mark16EvalLine = function (line, g, builtin) {
       g[g.__key] = g.__text.join("\n")
       g.__mode = "single"  
     } else {
-      g.__text.push(line.substr(2)) 
+      //g.__text.push(line.substr(2)) 
+      //g.__text.push(line.substr(1)) 
+      g.__text.push(line) 
     }
   } else {
     if (line == "" || line.substr(0, 1) == "#") {

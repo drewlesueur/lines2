@@ -43,7 +43,7 @@
       if (color - 0 == color) {
         color = presets[color]  
       }
-        d.fillStyle = color
+        d.fillStyle = color || "white"
       d.fillRect(x, y, 1, 1) 
     }  
     
@@ -67,7 +67,7 @@
     for (var y = 0; y < 64; y++) {
       for (var x = 0; x < 64; x++) {
         alternateColor()
-        d.fillStyle = color
+        d.fillStyle = color || "white"
         //d.fillRect(x,y,1,1) 
       }
     }
@@ -313,7 +313,7 @@
   window.ontouchstart = function (e) {
       
   }
-
+  var totalSize = 0
   // event source or web sockets!
   if (!!window.EventSource) {
     var source = new EventSource('/out');
@@ -327,10 +327,34 @@
 
   var ws = new WebSocket("ws://drewles.com:1618")
   ws.onmessage = function (e) {
+      totalSize += e.data.length / 1048576
     var data = JSON.parse(e.data);  
     handleResponse(data)
   }
 
+  var printable = "abcdefghijklmnopqrstuvwxyz"
+  var decompress = function (compressed) {
+    var colors = []
+    var parts = compressed.split(" ")
+    var colorList = parts[0].split("|")
+    var items = parts[1].split("|")
+    var colorTable = {}
+    for (var i = 0; i < colorList.length; i++) {
+      var str = printable.charAt(i) 
+      var color = colorList[i]
+      colorTable[str] = color
+    }
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i]
+      var colorStr = item.charAt(0)
+      var color = colorTable[colorStr]
+      var times = item.slice(1)  -0 
+      for (timesi = 0; timesi < times; timesi++) {
+        colors.push(color)
+      }
+    }
+    return colors
+  }
   var handleResponse = function (data) {
       var x = data.x
       var y = data.y
@@ -339,10 +363,13 @@
       var colors = data.colors
       var letters = data.letters
       var i = 0
+      if (data.compressed) {
+        colors = decompress(data.compressed)
+      }
       //console.log(colors)
       for (var y = data.y; y < h; y++) {
         for (var x = data.x; x < w; x++) {
-          setPixel(x, y, colors[i]) 
+          setPixel(x, y, "#" + colors[i]) 
           //setChar(x, y, letters[i], "black") 
           i++
         } 

@@ -4,9 +4,9 @@
 //redis based.
 
 
-var thew = 32
+var thew = 32 
 var theh = thew
-var themillis = 100
+var themillis = 50
 var http = require("http")
 
 var redis = require("redis")
@@ -131,6 +131,36 @@ var oldTick = function () {
   })
 }
 
+var printable = "abcdefghijklmnopqrstuvwxyz"
+var compress = function (colors) {
+  var ret = []
+  var lastColor = ""
+  var count = 0
+  var colorTable = {}
+  var colorList = []
+  var colorTableIndex = - 1
+  for (var i = 0; i <= colors.length; i++) {
+    var color = colors[i]
+    if (!colorTable[color] && colorTable[color] !== 0 && i != colors.length) {
+      colorTableIndex += 1
+      colorTable[color] = printable.charAt(colorTableIndex)
+      colorList.push(color)
+    }
+
+    if (color != lastColor && i != 0) {
+      var countString = count == 1 ? "1" : count.toString()
+      ret.push(colorTable[lastColor] + countString)
+      count = 1
+    } else {
+      count+= 1
+    }
+    lastColor = color
+  }
+ 
+  ret = colorList.join("|") + " " +  ret.join("|");
+  return ret;
+}
+
 var c = 0
 var getMessageJson = function () {
   var colors = []
@@ -138,15 +168,24 @@ var getMessageJson = function () {
   var w = thew
   var h = w
   c += 1
+  if (c > 800) {c = 0}
   //letters = "hello world".split("")
-  filled("#ff0", colors)
-  drawText(c,0, "abab", "#00aa00", colors)
+
+  filled("00cc00", colors)
+  drawText(c,0, "abcabc", "fff", colors)
+  drawText(c,8, "abcabc", "fff", colors)
+
+  //filled(1, colors)
+  //drawText(c,0, "abcabc", 0, colors)
+  var compressed = compress(colors)
+  //console.log(compressed)
   var ret = {
     x: 0,
     y: 0,
     w: w,
     h: h,
-    colors: colors,
+    //colors: colors,
+    compressed: compress(colors) ,
     letters: letters,
   }
   return JSON.stringify(ret)

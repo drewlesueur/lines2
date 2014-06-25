@@ -12,8 +12,8 @@ end
 printi info
 
 lines fooey
-  print hi_man
-  print inside_a_function_call
+print hi_man
+print inside_a_function_call
 end
 
 fooey
@@ -37,7 +37,6 @@ greet
 
 set name Drew_LeSueur_yo!
 print what was last
-
 
 
 lines loopey

@@ -3,7 +3,8 @@
 // 64x64 operating system
 //redis based.
 
-var thew = 64
+var thew = 32
+var themillis = 100
 var http = require("http")
 
 var redis = require("redis")
@@ -17,6 +18,7 @@ var http = require('http');
 var url = require('url')
 var fs = require("fs")
 var _ = require("underscore")
+var _s = require("underscore.string")
 
 var listeners = {}
 var listenersWs = {}
@@ -30,7 +32,7 @@ setInterval(function () {
   _.each(listenersWs, function (ws) {
     ws.send(json)
   })
-}, 1000)
+}, themillis)
 
 var allColors = ["red", "green", "blue", "pink", "lime", "cyan", "magenta", "yellow", "orange"]
 //var allColors = ["black", "white"]
@@ -38,15 +40,25 @@ var allLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890
 //var allColors = [0, 1]
 //var allColors = ["#ff0000", "#00ffff", "#00ff00", "orange"]
 
+var cc = 0
 var getMessageJson = function () {
   var colors = []
   var letters = []
   var w = thew
   var h = w
+  var c = cc
+  //var c = 0
   _.times(w * h, function () {
-    colors.push(allColors[_.random(0, allColors.length - 1)]) 
-    letters.push(allLetters[_.random(0, allLetters.length - 1)]) 
+    //colors.push(allColors[_.random(0, allColors.length - 1)]) 
+    //colors.push("#" + _s.lpad(_.random(0,0xffffff).toString(16), 6, 0))
+    
+    var color = "#" + _s.lpad(c.toString(16), 6, "0")
+    colors.push(color)
+    c += 1000
+    //console.log(color)
+    //letters.push(allLetters[_.random(0, allLetters.length - 1)]) 
   })
+  cc += 1000
   //letters = "hello world".split("")
   var ret = {
     x: 0,

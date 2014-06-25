@@ -339,10 +339,11 @@
       var colors = data.colors
       var letters = data.letters
       var i = 0
+      //console.log(colors)
       for (var y = data.y; y < h; y++) {
         for (var x = data.x; x < w; x++) {
           setPixel(x, y, colors[i]) 
-          setChar(x, y, letters[i], "black") 
+          //setChar(x, y, letters[i], "black") 
           i++
         } 
       }

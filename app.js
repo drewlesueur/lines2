@@ -3,8 +3,10 @@
 // 64x64 operating system
 //redis based.
 
+
 var thew = 32
-var themillis = 32
+var theh = thew
+var themillis = 100
 var http = require("http")
 
 var redis = require("redis")
@@ -12,6 +14,60 @@ var client = redis.createClient()
 client.get("drew", function (err, val) {
   console.log(val)
 })
+
+var font1 = {
+  a: ["    ",
+      " xx ",
+      "x x ",
+      "x x ",
+      " xx ",
+  ],
+  b: ["x   ",
+      "xx  ",
+      "x x ",
+      "x x ",
+      "xx  ",
+  ],
+  c: ["    ",
+      " xx ",
+      "x   ",
+      "x   ",
+      " xx ",
+  ],
+  c: ["    ",
+      " xx ",
+      "x   ",
+      "x   ",
+      " xx ",
+  ],
+}
+
+var filled = function (color, ret) {
+  var tot = thew * theh
+  for (var i = 0; i < tot; i++) {
+    ret.push(color) 
+  }
+  return ret;
+}
+
+var drawText = function (x,y, text, color, canvas) {
+  var _x = x
+  var _y = y
+  for (var i = 0; i < text.length; i++) {
+    var chr = text.charAt(i)
+    var pixels = font1[chr] // letter
+    for (var pixeli = 0; pixeli < pixels.length; pixeli++) {
+      var row = pixels[pixeli];  
+      for (var rowi = 0; rowi < row.length; rowi++) {
+        var chr = row.charAt(rowi)
+        if (chr == "x") {
+          canvas[((y + pixeli) * theh) + x + rowi] = color
+        }
+      }
+    }    
+    x += pixels[0].length
+  } 
+}
 
 
 var http = require('http');
@@ -62,11 +118,7 @@ var formatRgb = function (rgb) {
      + _s.lpad(rgb[2].toString(16), 2, "0")
 }
 
-var getMessageJson = function () {
-  var colors = []
-  var letters = []
-  var w = thew
-  var h = w
+var oldTick = function () {
   _.times(w * h, function () {
     increment(rgb, 56, 256);
      var color = formatRgb(rgb)
@@ -77,7 +129,18 @@ var getMessageJson = function () {
     //console.log(color)
     //letters.push(allLetters[_.random(0, allLetters.length - 1)]) 
   })
+}
+
+var c = 0
+var getMessageJson = function () {
+  var colors = []
+  var letters = []
+  var w = thew
+  var h = w
+  c += 1
   //letters = "hello world".split("")
+  filled("#ff0", colors)
+  drawText(c,0, "abab", "#00aa00", colors)
   var ret = {
     x: 0,
     y: 0,

@@ -4,7 +4,7 @@
 //redis based.
 
 var thew = 32
-var themillis = 100
+var themillis = 32
 var http = require("http")
 
 var redis = require("redis")
@@ -40,25 +40,43 @@ var allLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890
 //var allColors = [0, 1]
 //var allColors = ["#ff0000", "#00ffff", "#00ff00", "orange"]
 
-var cc = 0
+var rgb = [0,0,0]
+var increment = function (number, by, max, index) {
+  if (!index && index !== 0) {index = number.length - 1} 
+
+  rgb[index] += by
+  if (rgb[index] >= max) {
+    rgb[index] = 0
+    if (index == 0) {
+      return [0,0,0] // todo make it the length
+    } else {
+      increment(rgb, by, max, index - 1)
+    }
+  }
+}
+
+var formatRgb = function (rgb) {
+  return "#" 
+     + _s.lpad(rgb[0].toString(16), 2, "0")
+     + _s.lpad(rgb[1].toString(16), 2, "0")
+     + _s.lpad(rgb[2].toString(16), 2, "0")
+}
+
 var getMessageJson = function () {
   var colors = []
   var letters = []
   var w = thew
   var h = w
-  var c = cc
-  //var c = 0
   _.times(w * h, function () {
+    increment(rgb, 56, 256);
+     var color = formatRgb(rgb)
     //colors.push(allColors[_.random(0, allColors.length - 1)]) 
     //colors.push("#" + _s.lpad(_.random(0,0xffffff).toString(16), 6, 0))
-    
-    var color = "#" + _s.lpad(c.toString(16), 6, "0")
     colors.push(color)
-    c += 1000
+    //if (color == "#001100") { process.exit()}
     //console.log(color)
     //letters.push(allLetters[_.random(0, allLetters.length - 1)]) 
   })
-  cc += 1000
   //letters = "hello world".split("")
   var ret = {
     x: 0,

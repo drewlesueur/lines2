@@ -98,18 +98,18 @@
     }
   }
 
-    for (var y = 0; y < pixelsx; y++) {
-      for (var x = 0; x < pixelsy; x++) {
-        var pixel = document.createElement("div")
-        pixel.style.position = "absolute"
-        pixel.style.top = (y * pixelsw)  + "px"
-        pixel.style.left = (x * pixelsh)  + "px"
-        pixel.style.width = pixelsw + "px"
-        pixel.style.height = pixelsh + "px"
-        pixel.id = "chr_" + x + "_" + y
-        document.body.appendChild(pixel)
-      }
-    }
+    //for (var y = 0; y < pixelsx; y++) {
+    //  for (var x = 0; x < pixelsy; x++) {
+    //    var pixel = document.createElement("div")
+    //    pixel.style.position = "absolute"
+    //    pixel.style.top = (y * pixelsw)  + "px"
+    //    pixel.style.left = (x * pixelsh)  + "px"
+    //    pixel.style.width = pixelsw + "px"
+    //    pixel.style.height = pixelsh + "px"
+    //    pixel.id = "chr_" + x + "_" + y
+    //    document.body.appendChild(pixel)
+    //  }
+    //}
 
   var setChar = function (x, y, letter, color) {
     return;

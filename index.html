@@ -332,12 +332,13 @@
     handleResponse(data)
   }
 
-  var printable = "abcdefghijklmnopqrstuvwxyz"
+  var printable = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+-=:;,.?<>{}[]"
   var decompress = function (compressed) {
     var colors = []
     var parts = compressed.split(" ")
     var colorList = parts[0].split("|")
-    var items = parts[1].split("|")
+    //var items = parts[1].split("|")
+    var items = parts[1].match(/([^\d]\d*)/g)
     var colorTable = {}
     for (var i = 0; i < colorList.length; i++) {
       var str = printable.charAt(i) 
@@ -348,7 +349,7 @@
       var item = items[i]
       var colorStr = item.charAt(0)
       var color = colorTable[colorStr]
-      var times = item.slice(1)  -0 
+      var times = item.slice(1)  -0 || 1
       for (timesi = 0; timesi < times; timesi++) {
         colors.push(color)
       }
@@ -356,19 +357,21 @@
     return colors
   }
   var handleResponse = function (data) {
-      var x = data.x
-      var y = data.y
-      var w = data.w
-      var h = data.h
+      var x = data.x || 0
+      var y = data.y || 0
+      var w = data.w || 32
+      var h = data.h || 32
+      var _x = x
+      var _y = y
       var colors = data.colors
       var letters = data.letters
       var i = 0
-      if (data.compressed) {
-        colors = decompress(data.compressed)
+      if (data.c) { // c for compressed
+        colors = decompress(data.c)
       }
       //console.log(colors)
-      for (var y = data.y; y < h; y++) {
-        for (var x = data.x; x < w; x++) {
+      for (var y = _y; y < h; y++) {
+        for (var x = _x; x < w; x++) {
           setPixel(x, y, "#" + colors[i]) 
           //setChar(x, y, letters[i], "black") 
           i++

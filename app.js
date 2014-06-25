@@ -131,7 +131,7 @@ var oldTick = function () {
   })
 }
 
-var printable = "abcdefghijklmnopqrstuvwxyz"
+var printable = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+-=:;,.?<>{}[]"
 var compress = function (colors) {
   var ret = []
   var lastColor = ""
@@ -148,7 +148,7 @@ var compress = function (colors) {
     }
 
     if (color != lastColor && i != 0) {
-      var countString = count == 1 ? "1" : count.toString()
+      var countString = count == 1 ? "" : count.toString()
       ret.push(colorTable[lastColor] + countString)
       count = 1
     } else {
@@ -157,7 +157,7 @@ var compress = function (colors) {
     lastColor = color
   }
  
-  ret = colorList.join("|") + " " +  ret.join("|");
+  ret = colorList.join("|") + " " +  ret.join("");
   return ret;
 }
 
@@ -173,20 +173,20 @@ var getMessageJson = function () {
 
   filled("00cc00", colors)
   drawText(c,0, "abcabc", "fff", colors)
-  drawText(c,8, "abcabc", "fff", colors)
+  drawText(c + 12,8, "abcabc", "ff0", colors)
+  drawText(Math.round(c * 1) + 20,16, "abcabc", "00f", colors)
 
   //filled(1, colors)
   //drawText(c,0, "abcabc", 0, colors)
   var compressed = compress(colors)
   //console.log(compressed)
   var ret = {
-    x: 0,
-    y: 0,
-    w: w,
-    h: h,
+    //x: 0,
+    //y: 0,
+    //w: w,
+    //h: h,
     //colors: colors,
-    compressed: compress(colors) ,
-    letters: letters,
+    c: compress(colors) ,
   }
   return JSON.stringify(ret)
 }

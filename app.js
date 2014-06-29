@@ -6,7 +6,7 @@
 
 var thew = 64
 var theh = 32
-var themillis = 500
+var themillis = 30
 var http = require("http")
 
 var redis = require("redis")
@@ -36,13 +36,28 @@ var font1 = {
   ],
 }
 
+var setPixel = function (x, y, color, ret) {
+  ret[y*thew + x] = color 
+}
+
+//var filled = function (color, ret) {
+//  var tot = thew * theh
+//  for (var i = 0; i < tot; i++) {
+//    ret.push(color) 
+//  }
+//  return ret;
+//}
+
 var filled = function (color, ret) {
   var tot = thew * theh
-  for (var i = 0; i < tot; i++) {
-    ret.push(color) 
-  }
+  for (var y = 0; y < theh; y++) {
+    for (var x = 0; x < thew; x++) {
+      setPixel(x, y, color, ret) 
+    } 
+  } 
   return ret;
 }
+
 var drawText = function (x,y, text, color, canvas) {
   var _x = x
   var _y = y
@@ -54,7 +69,8 @@ var drawText = function (x,y, text, color, canvas) {
       for (var rowi = 0; rowi < row.length; rowi++) {
         var chr = row.charAt(rowi)
         if (chr == "x") {
-          canvas[((y + pixeli) * thew) + x + rowi] = color
+          setPixel(x + rowi, y + pixeli, color, canvas)
+          //canvas[((y + pixeli) * thew) + x + rowi] = color
         }
       }
     }    
@@ -159,8 +175,14 @@ var compress = function (colors) {
   return ret;
 }
 
-var command = function () {
+var filled2 = function (color, dd) {
+  filled(color, dd.colors)
+  dd.commands.push(["f", color])
+}
 
+var drawText2 = function (x, y, text, color, dd) {
+  drawText(x, y, text, color, dd.colors)
+  dd.commands.push(["t", x, y, text, color])
 }
 
 var c = 0
@@ -170,13 +192,14 @@ var getMessageJson = function () {
   var w = thew
   var h = theh
   c += 1
-  if (c > 800) {c = 0}
+  if (c > 64) {c = 0}
   //letters = "hello world".split("")
-  
-  filled("00cc00", colors)
-  drawText(c,0, "abc", "fff", colors)
-  drawText(c + 12,8, "abcabc", "ff0", colors)
-  drawText(Math.round(c * 1) + 20,16, "abcabc", "00f", colors)
+  var dd = {commands: []} 
+  dd.colors = colors
+  filled2("00cc00", dd)
+  drawText2(c,0, "abc", "fff", dd)
+  drawText2(c + 12,8, "abcabc", "ff0", dd)
+  drawText2(Math.round(c * 1) + 20,16, "abcabc", "00f", dd)
 
   //filled(1, colors)
   //drawText(c,0, "abcabc", 0, colors)
@@ -187,13 +210,31 @@ var getMessageJson = function () {
     w: thew,
     h: theh,
     //colors: colors,
-    c: compress(colors) ,
+    //c: compress(colors) ,
+    i: dd.commands,
   }
-  return JSON.stringify(ret)
+  var stringified = JSON.stringify(ret)
+  //console.log(stringified)
+  return stringified
 }
 
 var WebSocketServer = require('ws').Server
 var wss = new WebSocketServer({port: 1618});
+
+setInterval(function ( ){
+  _.each(listenersWs, function (ws, id) {
+    if (ws.__shouldClose) {
+      try {
+        ws.close()
+        delete listenersWs[id] 
+      } catch (e) {
+        console.log("error closing " + id)
+      }
+      console.log("closing " + id)
+    } 
+    ws.__shouldClose = true
+  })
+}, 5000)
 
 wss.on('connection', function(ws) {
   var id = _.uniqueId("listener")
@@ -202,7 +243,10 @@ wss.on('connection', function(ws) {
   ws.on('close', function () {
     delete listenersWs[id] 
   }) 
+  ws.__shouldClose = true
   ws.on('message', function(message) {
+    ws.__shouldClose = false
+    console.log(message)
   });
   //ws.send('something');
 });
@@ -235,7 +279,7 @@ http.createServer(function (req, res) {
 }).listen(1617);
 console.log('server running');
 
-process.on('uncaughtException', function(err) {
-  console.log('Caught exception: ' + err);
-});
+//process.on('uncaughtException', function(err) {
+//  console.log('Caught exception: ' + err);
+//});
 

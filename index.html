@@ -12,6 +12,65 @@
   <script>
   </script>
 <script>
+  var font1 = {
+    a: ["    ",
+        " xx ",
+        "x x ",
+        "x x ",
+        " xx ",
+    ],
+    b: ["x   ",
+        "xx  ",
+        "x x ",
+        "x x ",
+        "xx  ",
+    ],
+    c: ["    ",
+        " xx ",
+        "x   ",
+        "x   ",
+        " xx ",
+    ],
+  }
+
+  var messageSpan = document.createElement("span")
+  messageSpan.style.zIndex = 999999
+  document.body.appendChild(messageSpan)
+  
+  var filled = function (color, ret) {
+    var tot = thew * theh
+    for (var y = 0; y < theh; y++) {
+      for (var x = 0; x < thew; x++) {
+        setPixel(x, y, color, ret) 
+      } 
+    } 
+    return ret;
+  }
+
+  var cachedImgs = {}
+  var drawText = function (x,y, text, color, canvas) {
+    var _x = x
+    var _y = y
+    for (var i = 0; i < text.length; i++) {
+      var chr = text.charAt(i)
+      var pixels = font1[chr] // letter
+      for (var pixeli = 0; pixeli < pixels.length; pixeli++) {
+        var row = pixels[pixeli];  
+        for (var rowi = 0; rowi < row.length; rowi++) {
+          var chr = row.charAt(rowi)
+          if (chr == "x") {
+            setPixel(x + rowi, y + pixeli, color, canvas)
+            //canvas[((y + pixeli) * thew) + x + rowi] = color
+          }
+        }
+      }    
+      x += pixels[0].length
+    } 
+  }
+  var drawingCommands = {
+    f: filled,
+    t: drawText
+  }
 
   function fit(x, y, x1, y1) {
     var heightScale = y / y1 
@@ -30,10 +89,12 @@
   var isChrome = (navigator.userAgent.toLowerCase().indexOf('chrome') > -1)
 
   var usingCanvas = isChrome ? false : true
-  //var usingCanvas = true;
+  var usingCanvas = true;
 
   var pixelsx = "thew"
   var pixelsy = "theh"
+  var thew = pixelsx
+  var theh = pixelsy
 
   var scale = fit(innerWidth, innerHeight, pixelsx, pixelsy)
   var totalw = pixelsx * scale
@@ -48,18 +109,29 @@
   var presets = ["white", "black", "red"]
   document.body.style.textAlign = "center"
   if (usingCanvas) {
+    var canvasPixelx = 1 // scale
+    var canvasPixely = 1
+
+    var canvasPixelx = Math.round(scale)
+    var canvasPixely = Math.round(scale)
+    drawingCommands.f = function (color){ // faster fill function
+      var s = Date.now()
+      d.fillStyle = "#" + color
+      d.fillRect(0, 0, pixelsx * canvasPixelx, pixelsy * canvasPixely) 
+      messageSpan.innerHTML = Date.now() - s
+    }
     var setPixel = function (x, y, color) {
       if (color - 0 == color) {
         color = presets[color]  
       }
-        d.fillStyle = color || "white"
-      d.fillRect(x, y, 1, 1) 
+        d.fillStyle = "#" + color || "white"
+      d.fillRect(x*canvasPixelx, y*canvasPixelx, canvasPixelx, canvasPixely) 
     }  
     
     //var c = document.getElementById("c")
     var c = document.createElement("canvas")
-    c.width = pixelsx
-    c.height = pixelsy
+    c.width = pixelsx * canvasPixelx
+    c.height = pixelsy * canvasPixely
     c.style.width = totalw + "px"
     c.style.height = totalh + "px"
     c.style.imageRendering = "-webkit-optimize-contrast";
@@ -84,15 +156,22 @@
     var container = document.createElement("div")
 
     container.style.position = "relative"
+    container.style.width = totalw + "px"
+    container.style.height = totalh + "px"
     container.style.left = (innerWidth - totalw) / 2 +"px"
     document.body.appendChild(container)
+    drawingCommands.f2 = function (color){ // faster fill function
+      var s = Date.now()
+      container.style.backgroundColor = "#" + color
+      messageSpan.innerHTML = Date.now() - s
+    }
     setPixel = function (x, y, color) {
       var p = document.getElementById(x + "_" + y)
       if (p) {
         if (color - 0 == color) {
           color = presets[color]  
         }
-        p.style.backgroundColor = color
+        p.style.backgroundColor = "#" + color
       } else {
         //console.log("no", x, y)
       }
@@ -107,6 +186,7 @@
         pixel.style.width = pixelsw + "px"
         pixel.style.height = pixelsh + "px"
         pixel.id = x + "_" + y
+        pixel.style.borderRadius = pixel.width /2 + "px"
         container.appendChild(pixel)
       }
     }
@@ -345,6 +425,12 @@
     var data = JSON.parse(e.data);  
     handleResponse(data)
   }
+  // use engine.io or socket.io
+
+  var ts = Date.now()
+  setInterval(function () {
+    ws.send(ts) 
+  }, 1000)
 
   var printable = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()_+-=:;,.?<>{}[]"
   var decompress = function (compressed) {
@@ -371,6 +457,7 @@
     return colors
   }
   var handleResponse = function (data) {
+      var s = Date.now()
       var x = data.x || 0
       var y = data.y || 0
       var w = data.w || 32
@@ -380,17 +467,37 @@
       var colors = data.colors
       var letters = data.letters
       var i = 0
-      if (data.c) { // c for compressed
-        colors = decompress(data.c)
-      }
-      //console.log(colors)
-      for (var y = _y; y < h; y++) {
-        for (var x = _x; x < w; x++) {
-          setPixel(x, y, "#" + colors[i]) 
-          //setChar(x, y, letters[i], "black") 
-          i++
+
+      if (data.i) {
+        for (var i = 0; i < data.i.length; i++) {
+          var cmd = data.i[i]  
+          // make a faster version? that doesn't use apply
+          var drawTime = Date.now()
+          var decompressTime = 0
+          drawingCommands[cmd[0]].apply(null, cmd.slice(1))
+          drawTime = Date.now() - drawTime
         } 
+      } else {
+        if (data.c) { // c for compressed
+          var decompressTime = Date.now()
+          colors = decompress(data.c)
+          decompressTime =  Date.now() - decompressTime
+        }
+        //console.log(colors)
+        var drawTime = Date.now()
+        for (var y = _y; y < h; y++) {
+          for (var x = _x; x < w; x++) {
+            setPixel(x, y, colors[i]) 
+            //setChar(x, y, letters[i], "black") 
+            i++
+          } 
+        }
+        drawTime = Date.now() - drawTime
+      
       }
+     var now = Date.now()
+     var totTime = now - s
+    messageSpan.innerHTML =  totTime + ", " + decompressTime + ", " + drawTime
   }
 
 </script>

@@ -13,6 +13,16 @@
   </script>
 <script>
 
+  function fit(x, y, x1, y1) {
+    var heightScale = y / y1 
+    var widthScale = x / x1
+    if (heightScale < widthScale) {
+      return heightScale 
+    } else {
+      return widthScale 
+    }
+  }
+
   function getRandomInt (min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
@@ -23,13 +33,11 @@
   //var usingCanvas = true;
 
   var pixelsx = "thew"
-  var pixelsy = pixelsx
-  if (innerWidth < innerHeight) {
-    totalw = innerWidth
-  }  else {
-    totalw = innerHeight
-  }
-  var totalh = totalw
+  var pixelsy = "theh"
+
+  var scale = fit(innerWidth, innerHeight, pixelsx, pixelsy)
+  var totalw = pixelsx * scale
+  var totalh = pixelsy * scale
 
   var pixelsw = Math.floor(totalw / pixelsx)
   var pixelsh = Math.floor(totalh / pixelsy)
@@ -38,6 +46,7 @@
   var pixelsh = (totalh / pixelsy)
 
   var presets = ["white", "black", "red"]
+  document.body.style.textAlign = "center"
   if (usingCanvas) {
     var setPixel = function (x, y, color) {
       if (color - 0 == color) {
@@ -72,6 +81,11 @@
       }
     }
   } else {
+    var container = document.createElement("div")
+
+    container.style.position = "relative"
+    container.style.left = (innerWidth - totalw) / 2 +"px"
+    document.body.appendChild(container)
     setPixel = function (x, y, color) {
       var p = document.getElementById(x + "_" + y)
       if (p) {
@@ -84,8 +98,8 @@
       }
     }
 
-    for (var y = 0; y < pixelsx; y++) {
-      for (var x = 0; x < pixelsy; x++) {
+    for (var y = 0; y < pixelsy; y++) {
+      for (var x = 0; x < pixelsx; x++) {
         var pixel = document.createElement("div")
         pixel.style.position = "absolute"
         pixel.style.top = (y * pixelsw)  + "px"
@@ -93,7 +107,7 @@
         pixel.style.width = pixelsw + "px"
         pixel.style.height = pixelsh + "px"
         pixel.id = x + "_" + y
-        document.body.appendChild(pixel)
+        container.appendChild(pixel)
       }
     }
   }
@@ -360,7 +374,7 @@
       var x = data.x || 0
       var y = data.y || 0
       var w = data.w || 32
-      var h = data.h || 32
+      var h = data.h || 64
       var _x = x
       var _y = y
       var colors = data.colors
@@ -378,8 +392,5 @@
         } 
       }
   }
-
-  
-
 
 </script>

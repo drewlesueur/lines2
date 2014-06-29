@@ -4,9 +4,9 @@
 //redis based.
 
 
-var thew = 32 
-var theh = thew
-var themillis = 50
+var thew = 64
+var theh = 32
+var themillis = 500
 var http = require("http")
 
 var redis = require("redis")
@@ -34,12 +34,6 @@ var font1 = {
       "x   ",
       " xx ",
   ],
-  c: ["    ",
-      " xx ",
-      "x   ",
-      "x   ",
-      " xx ",
-  ],
 }
 
 var filled = function (color, ret) {
@@ -49,7 +43,6 @@ var filled = function (color, ret) {
   }
   return ret;
 }
-
 var drawText = function (x,y, text, color, canvas) {
   var _x = x
   var _y = y
@@ -61,13 +54,18 @@ var drawText = function (x,y, text, color, canvas) {
       for (var rowi = 0; rowi < row.length; rowi++) {
         var chr = row.charAt(rowi)
         if (chr == "x") {
-          canvas[((y + pixeli) * theh) + x + rowi] = color
+          canvas[((y + pixeli) * thew) + x + rowi] = color
         }
       }
     }    
     x += pixels[0].length
   } 
 }
+var drawingCommands = {
+  filled: filled,
+  drawText: drawText
+}
+
 
 
 var http = require('http');
@@ -161,30 +159,33 @@ var compress = function (colors) {
   return ret;
 }
 
+var command = function () {
+
+}
+
 var c = 0
 var getMessageJson = function () {
   var colors = []
   var letters = []
   var w = thew
-  var h = w
+  var h = theh
   c += 1
   if (c > 800) {c = 0}
   //letters = "hello world".split("")
-
+  
   filled("00cc00", colors)
-  drawText(c,0, "abcabc", "fff", colors)
+  drawText(c,0, "abc", "fff", colors)
   drawText(c + 12,8, "abcabc", "ff0", colors)
   drawText(Math.round(c * 1) + 20,16, "abcabc", "00f", colors)
 
   //filled(1, colors)
   //drawText(c,0, "abcabc", 0, colors)
-  var compressed = compress(colors)
   //console.log(compressed)
   var ret = {
     //x: 0,
     //y: 0,
-    //w: w,
-    //h: h,
+    w: thew,
+    h: theh,
     //colors: colors,
     c: compress(colors) ,
   }
@@ -214,7 +215,7 @@ http.createServer(function (req, res) {
   if (pathname == "/") {
     res.writeHead(200, {'Content-Type': 'text/html'});
     fs.readFile("./index.html", function (err, text) {
-      res.end(text.toString().replace(/"thew"/, thew)) 
+      res.end(text.toString().replace(/"thew"/, thew).replace(/"theh"/, theh)) 
     }) 
   } else if (pathname == "/in") {
     res.end();
